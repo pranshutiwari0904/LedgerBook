@@ -39,6 +39,33 @@ const isLocalhostOrigin = (origin) => {
   }
 };
 
+const matchesWildcardOrigin = (origin, pattern) => {
+  try {
+    const originUrl = new URL(origin);
+    const [patternProtocol, patternHost] = pattern.split('://');
+
+    if (!patternProtocol || !patternHost) {
+      return false;
+    }
+
+    if (originUrl.protocol !== `${patternProtocol}:`) {
+      return false;
+    }
+
+    if (!patternHost.startsWith('*.')) {
+      return false;
+    }
+
+    const suffix = patternHost.slice(2);
+    return originUrl.hostname === suffix || originUrl.hostname.endsWith(`.${suffix}`);
+  } catch (_error) {
+    return false;
+  }
+};
+
+const isAllowedConfiguredOrigin = (origin) =>
+  allowedOrigins.some((pattern) => pattern === origin || matchesWildcardOrigin(origin, pattern));
+
 app.use(
   cors({
     origin(origin, callback) {
@@ -46,7 +73,7 @@ app.use(
         return callback(null, true);
       }
 
-      if (allowedOrigins.includes(origin) || isLocalhostOrigin(origin)) {
+      if (isAllowedConfiguredOrigin(origin) || isLocalhostOrigin(origin)) {
         return callback(null, true);
       }
 

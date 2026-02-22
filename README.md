@@ -100,6 +100,56 @@ npm run dev
 
 Frontend runs on `http://localhost:5173`.
 
+## 3A. Deploy (Render + Vercel, Free)
+
+This project is now deployment-ready for:
+- **Backend** on Render (`render.yaml` included)
+- **Frontend** on Vercel (`client/vercel.json` included)
+
+### A. Deploy Backend on Render
+
+1. Go to [Render Dashboard](https://dashboard.render.com/).
+2. Click `New` -> `Blueprint` (recommended) or `Web Service`.
+3. Connect GitHub and choose this repo: `pranshutiwari0904/LedgerBook`.
+4. If using Blueprint, Render will read `/Users/pranshutiwari/LedgerBook/render.yaml`.
+5. Set env vars in Render:
+- `MONGO_URI` = your MongoDB Atlas URI
+- `JWT_SECRET` = strong random string
+- `CLIENT_ORIGIN` = your Vercel production URL (example `https://ledgerbook.vercel.app`)
+- `CLIENT_ORIGINS` = `http://localhost:5173,http://localhost:5174,http://127.0.0.1:5173,http://127.0.0.1:5174,https://ledgerbook.vercel.app,https://*.vercel.app`
+6. Deploy and copy backend URL (example `https://ledgerbook-api.onrender.com`).
+
+### B. Deploy Frontend on Vercel
+
+1. Go to [Vercel Dashboard](https://vercel.com/dashboard).
+2. Click `Add New...` -> `Project`.
+3. Import `pranshutiwari0904/LedgerBook`.
+4. Set **Root Directory** to `client`.
+5. Add env var:
+- `VITE_API_BASE_URL` = `https://<your-render-backend>.onrender.com/api`
+6. Deploy.
+7. Copy your Vercel production URL.
+
+### C. Final CORS Sync
+
+After first Vercel deploy, update Render env:
+- `CLIENT_ORIGIN` to exact Vercel production URL
+- `CLIENT_ORIGINS` to include that URL and `https://*.vercel.app`
+
+Then trigger Render redeploy once.
+
+### D. Automatic Deploy on Future Pushes
+
+- Render: `autoDeploy: true` is already configured.
+- Vercel: auto-deploy is on by default after GitHub import.
+
+So for future changes:
+1. `git add .`
+2. `git commit -m "your message"`
+3. `git push origin main`
+
+Both Render and Vercel will redeploy automatically.
+
 ## 4. Auth + Group Concept
 
 At signup, both buyer and seller should use the same `groupCode` (example: `HOME123`).
