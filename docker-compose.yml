@@ -1,0 +1,15 @@
+version: '3.9'
+services:
+  mongodb:
+    image: mongo:7
+    container_name: ledgerbook-mongodb
+    restart: unless-stopped
+    ports:
+      - '27017:27017'
+    environment:
+      MONGO_INITDB_DATABASE: ledgerbook
+    volumes:
+      - ledgerbook_mongo_data:/data/db
+
+volumes:
+  ledgerbook_mongo_data:
